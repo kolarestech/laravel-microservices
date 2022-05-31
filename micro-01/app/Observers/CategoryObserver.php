@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Jobs\CategoryCreatedJob;
 use App\Models\Category;
 use Illuminate\Support\Str;
 
@@ -26,7 +27,7 @@ class CategoryObserver
      */
     public function created(Category $category)
     {
-        $category->url = Str::slug($category->title, '-');
+        (new CategoryCreatedJob())->dispatch();
     }
 
     /**
