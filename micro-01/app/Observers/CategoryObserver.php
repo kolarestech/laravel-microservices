@@ -19,6 +19,17 @@ class CategoryObserver
     }
 
     /**
+     * Handle the Category "created" event.
+     *
+     * @param  \App\Models\Category  $category
+     * @return void
+     */
+    public function created(Category $category)
+    {
+        $category->url = Str::slug($category->title, '-');
+    }
+
+    /**
      * Handle the Category "updated" event.
      *
      * @param  \App\Models\Category  $category
