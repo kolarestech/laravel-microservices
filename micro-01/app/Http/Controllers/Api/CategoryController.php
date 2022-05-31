@@ -3,10 +3,20 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\CategoryStoreRequest;
+use App\Http\Requests\CategoryUpdateRequest;
+use App\Http\Resources\CategoryResource;
+use App\Models\Category;
 
 class CategoryController extends Controller
 {
+    protected $repository;
+
+    public function __construct(Category $model)
+    {
+        $this->repository = $model;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +24,9 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        return response()->json(['categories']);
+        $data = $this->repository->get();
+
+        return CategoryResource::collection($data);
     }
 
     /**
@@ -23,9 +35,11 @@ class CategoryController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CategoryStoreRequest $request)
     {
-        //
+        $data = $this->repository->create($request->validated());
+
+        return new CategoryResource($data);
     }
 
     /**
@@ -36,7 +50,9 @@ class CategoryController extends Controller
      */
     public function show($id)
     {
-        //
+        $data = $this->repository->find($id)->firstOrFail();
+
+        return new CategoryResource($data);
     }
 
     /**
@@ -46,9 +62,13 @@ class CategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(CategoryUpdateRequest $request, $id)
     {
-        //
+        $data = $this->repository->find($id)->firstOrFail();
+
+        $data->update($request->validated());
+
+        return response()->json(["success" => true]);
     }
 
     /**
@@ -59,6 +79,10 @@ class CategoryController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $data = $this->repository->find($id)->firstOrFail();
+
+        $data->delete();
+
+        return response()->json(["success" => true]);
     }
 }
